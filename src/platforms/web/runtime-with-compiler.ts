@@ -12,19 +12,23 @@ import {
 import type { Component } from 'types/component'
 import type { GlobalAPI } from 'types/global-api'
 
+//根据id返回dom内容
 const idToTemplate = cached(id => {
   const el = query(id)
   return el && el.innerHTML
 })
 
+//重写$mount方法
 const mount = Vue.prototype.$mount
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  
   el = el && query(el)
 
   /* istanbul ignore if */
+  //将vue绑定到body或者html元素上的错误提示 
   if (el === document.body || el === document.documentElement) {
     __DEV__ &&
       warn(
@@ -35,7 +39,10 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
+  //解析template或者el属性，将其转换为render函数
+  //三种写法对应的三种不同分支
   if (!options.render) {
+    //获得模版字符串
     let template = options.template
     if (template) {
       if (typeof template === 'string') {
@@ -59,6 +66,7 @@ Vue.prototype.$mount = function (
       }
     } else if (el) {
       // @ts-expect-error
+      //如果没有传入template模版，则默认el元素所属的根结点作为基础模版
       template = getOuterHTML(el)
     }
     if (template) {
@@ -78,6 +86,7 @@ Vue.prototype.$mount = function (
         },
         this
       )
+      //获得模版字符串后，转换为render函数
       options.render = render
       options.staticRenderFns = staticRenderFns
 

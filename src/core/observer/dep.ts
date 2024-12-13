@@ -28,6 +28,10 @@ export interface DepTarget extends DebuggerOptions {
  * directives subscribing to it.
  * @internal
  */
+/**
+ * subs:用来存储Watcher对象
+ * Dep依赖关系管理的类，存储订阅者（即观察者Watcher）
+ */
 export default class Dep {
   static target?: DepTarget | null
   id: number
@@ -37,13 +41,14 @@ export default class Dep {
 
   constructor() {
     this.id = uid++
-    this.subs = []
+    this.subs = [] //subs 数组用来存储 Watcher 对象
   }
-
+ //添加Watcher
   addSub(sub: DepTarget) {
     this.subs.push(sub)
   }
-
+ 
+  //移除
   removeSub(sub: DepTarget) {
     // #12696 deps with massive amount of subscribers are extremely slow to
     // clean up in Chromium
@@ -55,9 +60,11 @@ export default class Dep {
       pendingCleanupDeps.push(this)
     }
   }
-
+  //当前Dep对象收集依赖
   depend(info?: DebuggerEventExtraInfo) {
+    //如果存在依赖此属性的Watcher
     if (Dep.target) {
+      //将当前 Dep 对象添加到 Watcher 的依赖列表中
       Dep.target.addDep(this)
       if (__DEV__ && info && Dep.target.onTrack) {
         Dep.target.onTrack({
@@ -67,7 +74,7 @@ export default class Dep {
       }
     }
   }
-
+  //通知所有依赖于该 Dep 对象的 Watcher 执行更新操作
   notify(info?: DebuggerEventExtraInfo) {
     // stabilize the subscriber list first
     const subs = this.subs.filter(s => s) as DepTarget[]
@@ -94,15 +101,20 @@ export default class Dep {
 // The current target watcher being evaluated.
 // This is globally unique because only one watcher
 // can be evaluated at a time.
+///静态属性，用来存储当前正在执行的 Watcher 对象
 Dep.target = null
 const targetStack: Array<DepTarget | null | undefined> = []
 
+//将指定的 Watcher 对象推入 Watcher 栈中
 export function pushTarget(target?: DepTarget | null) {
   targetStack.push(target)
+  //将当前 Watcher 对象赋值给 Dep.target
   Dep.target = target
 }
 
+//从 Watcher 栈中弹出最后一个 Watcher 对象
 export function popTarget() {
   targetStack.pop()
+  //恢复 Watcher 栈的上一个 Watcher 对象
   Dep.target = targetStack[targetStack.length - 1]
 }

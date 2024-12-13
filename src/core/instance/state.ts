@@ -48,8 +48,9 @@ export function proxy(target: Object, sourceKey: string, key: string) {
   }
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
-
+//依此初始化了 props->setup->method->data->computed-<watch
 export function initState(vm: Component) {
+  debugger
   const opts = vm.$options
   if (opts.props) initProps(vm, opts.props)
 
@@ -57,6 +58,7 @@ export function initState(vm: Component) {
   initSetup(vm)
 
   if (opts.methods) initMethods(vm, opts.methods)
+    //如果组件定义了data，则调用initData来初始化；如果没有定义data,则创建一个空对象，并将其转换为响应式对象。
   if (opts.data) {
     initData(vm)
   } else {
@@ -125,9 +127,12 @@ function initProps(vm: Component, propsOptions: Object) {
   toggleObserving(true)
 }
 
+//【初始化组件data  ***重要***】
 function initData(vm: Component) {
   let data: any = vm.$options.data
+  //如果 data 是一个函数，则通过 getData 函数获取其返回值，否则直接使用 data 或者默认为空对象 {}
   data = vm._data = isFunction(data) ? getData(data, vm) : data || {}
+  //如果data不是一个纯对象，则给出警告（开发环境下）
   if (!isPlainObject(data)) {
     data = {}
     __DEV__ &&
@@ -142,6 +147,7 @@ function initData(vm: Component) {
   const props = vm.$options.props
   const methods = vm.$options.methods
   let i = keys.length
+  //遍历 data 的键，将每个键设置为 vm 实例的代理属性（如果不是保留键）
   while (i--) {
     const key = keys[i]
     if (__DEV__) {
@@ -157,11 +163,14 @@ function initData(vm: Component) {
           vm
         )
     } else if (!isReserved(key)) {
+      //如果属性不是保留属性，则将其代理到 vm 实例上
       proxy(vm, `_data`, key)
     }
   }
   // observe data
+  //观察数据 确保数据变化时可以通知相关依赖
   const ob = observe(data)
+  //如果成功创建了观察对象，则增加其引用计数
   ob && ob.vmCount++
 }
 

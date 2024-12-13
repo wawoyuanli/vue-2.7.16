@@ -7,8 +7,10 @@ import { TriggerOpTypes } from '../../v3'
 import { def } from '../util/index'
 
 const arrayProto = Array.prototype
+/* 数组原型方法 */
 export const arrayMethods = Object.create(arrayProto)
 
+//改写数组原型上的7个方法
 const methodsToPatch = [
   'push',
   'pop',

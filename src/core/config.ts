@@ -7,7 +7,7 @@ import type { Component } from 'types/component'
  * @internal
  */
 export interface Config {
-  // user
+  // user { [key: string]: Function }表示一个对象，其中每个键（key）是字符串类型，对应的值（value）是函数类型。
   optionMergeStrategies: { [key: string]: Function }
   silent: boolean
   productionTip: boolean

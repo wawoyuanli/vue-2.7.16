@@ -1,3 +1,4 @@
+//【runtime/index中的Vue】
 import Vue from 'core/index'
 import config from 'core/config'
 import { extend, noop } from 'shared/util'
@@ -19,6 +20,7 @@ import platformComponents from './components/index'
 import type { Component } from 'types/component'
 
 // install platform specific utils
+//一些平台检查类的方法。平台相关
 Vue.config.mustUseProp = mustUseProp
 Vue.config.isReservedTag = isReservedTag
 Vue.config.isReservedAttr = isReservedAttr
@@ -26,6 +28,8 @@ Vue.config.getTagNamespace = getTagNamespace
 Vue.config.isUnknownElement = isUnknownElement
 
 // install platform runtime directives & components
+//平台相关指令组件
+//
 extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 

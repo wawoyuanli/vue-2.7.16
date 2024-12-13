@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../../dist/vue.js"></script>
+    <script>
+      const DemoGrid = {
+        props: {
+          data: Array,
+          columns: Array,
+          filterKey: String
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="demo">
+      {{gridColumns[0]}}
+      <DemoGrid></DemoGrid>
+    </div>
+  </body>
+</html>
+<script>
+  new Vue({
+    components: {
+      DemoGrid
+    },
+    data: () => ({
+      searchQuery: '',
+      gridColumns: ['name', 'power'],
+      gridData: [
+        { name: 'Chuck Norris', power: Infinity },
+        { name: 'Bruce Lee', power: 9000 },
+        { name: 'Jackie Chan', power: 7000 },
+        { name: 'Jet Li', power: 8000 }
+      ]
+    })
+  }).$mount('#demo')
+</script>

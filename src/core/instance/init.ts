@@ -39,12 +39,16 @@ export function initMixin(Vue: typeof Component) {
     vm._scope.parent = undefined
     vm._scope._vm = true
     // merge options
+    /* 判断是否是组件 */
+
     if (options && options._isComponent) {
-      // optimize internal component instantiation
+      // optimize internal component instantiation 优化内部组件实例
       // since dynamic options merging is pretty slow, and none of the
-      // internal component options needs special treatment.
+      // internal component options needs special treatment. 由于动态选项合并速度较慢，且内部组件选项均无需特殊处理。
+      //初始化内部组件
       initInternalComponent(vm, options as any)
     } else {
+      //非内部组件通过mergeOptions函数合并传入的options对象和当前Vue实例成为最终的$options对象
       vm.$options = mergeOptions(
         resolveConstructorOptions(vm.constructor as any),
         options || {},

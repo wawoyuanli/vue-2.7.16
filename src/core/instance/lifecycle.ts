@@ -1,3 +1,6 @@
+/**
+ *  vue生命周期钩子的实现
+ */
 import config from '../config'
 import Watcher, { WatcherOptions } from '../observer/watcher'
 import { mark, measure } from '../util/perf'
@@ -33,6 +36,7 @@ export function setActiveInstance(vm: Component) {
 }
 
 export function initLifecycle(vm: Component) {
+  debugger
   const options = vm.$options
 
   // locate first non-abstract parent
@@ -49,7 +53,7 @@ export function initLifecycle(vm: Component) {
 
   vm.$children = []
   vm.$refs = {}
-
+  /* Object.create(null) 没有任何属性的空对象*/
   vm._provided = parent ? parent._provided : Object.create(null)
   vm._watcher = null
   vm._inactive = null

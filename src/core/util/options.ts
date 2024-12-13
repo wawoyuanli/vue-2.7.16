@@ -24,8 +24,8 @@ import type { ComponentOptions } from 'types/options'
  * how to merge a parent option value and a child option
  * value into the final value.
  */
+/* 策略对象 一个什么属性都没有的对象 */
 const strats = config.optionMergeStrategies
-
 /**
  * Options with restrictions
  */
@@ -150,6 +150,13 @@ strats.data = function (
 
 /**
  * Hooks and props are merged as arrays.
+ * (是否有 childVal，即判断组件的选项中是否有对应名字的生命周期钩子函数)
+  ? 如果有 childVal 则判断是否有 parentVal
+    ? 如果有 parentVal 则使用 concat 方法将二者合并为一个数组
+    : 如果没有 parentVal 则判断 childVal 是不是一个数组
+      ? 如果 childVal 是一个数组则直接返回
+      : 否则将其作为数组的元素，然后返回数组
+  : 如果没有 childVal 则直接返回 parentVal
  */
 export function mergeLifecycleHook(
   parentVal: Array<Function> | null,
@@ -174,7 +181,7 @@ function dedupeHooks(hooks: any) {
   }
   return res
 }
-
+/* 合并生命周期钩子的 */
 LIFECYCLE_HOOKS.forEach(hook => {
   strats[hook] = mergeLifecycleHook
 })

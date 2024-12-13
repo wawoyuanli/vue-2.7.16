@@ -759,6 +759,11 @@
     "@vue/compiler-dom" "3.5.13"
     "@vue/shared" "3.5.13"
 
+"@vue/consolidate@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmmirror.com/@vue/consolidate/-/consolidate-1.0.0.tgz#5324d5bf09cf1dcf702e9bf1f8d3739385eef724"
+  integrity sha512-oTyUE+QHIzLw2PpV14GD/c7EohDyP64xCniWTcqcEmTd699eFqTIwOmtDYjcO1j3QgdXoJEoWv1/cCdLrRoOfg==
+
 "@vue/shared@3.5.13":
   version "3.5.13"
   resolved "https://registry.npmmirror.com/@vue/shared/-/shared-3.5.13.tgz#87b309a6379c22b926e696893237826f64339b6f"

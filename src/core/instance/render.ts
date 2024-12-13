@@ -93,6 +93,7 @@ export function setCurrentRenderingInstance(vm: Component) {
 }
 
 export function renderMixin(Vue: typeof Component) {
+
   // install runtime convenience helpers
   installRenderHelpers(Vue.prototype)
 

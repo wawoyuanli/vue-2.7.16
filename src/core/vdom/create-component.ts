@@ -220,6 +220,7 @@ export function createComponentInstanceForVnode(
     _parentVnode: vnode,
     parent
   }
+  
   // check inline-template render functions
   const inlineTemplate = vnode.data.inlineTemplate
   if (isDef(inlineTemplate)) {

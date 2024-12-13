@@ -38,10 +38,17 @@ export interface WatcherOptions extends DebuggerOptions {
  * This is used for both the $watch() api and directives.
  * @internal
  */
+/**
+ * 
+ */
+/**
+ * DepTarget:[addDep,update]:添加依赖和更新
+ * [onTrack,onTrigger]
+ */
 export default class Watcher implements DepTarget {
-  vm?: Component | null
+  vm?: Component | null //Vue实例
   expression: string
-  cb: Function
+  cb: Function //回调函数，数据变化时触发
   id: number
   deep: boolean
   user: boolean
@@ -56,8 +63,8 @@ export default class Watcher implements DepTarget {
   before?: Function
   onStop?: Function
   noRecurse?: boolean
-  getter: Function
-  value: any
+  getter: Function //数据获取函数
+  value: any //初始化时执行get函数获取当前数据的值
   post: boolean
 
   // dev only
@@ -130,7 +137,9 @@ export default class Watcher implements DepTarget {
   /**
    * Evaluate the getter, and re-collect dependencies.
    */
+  //评估getter函数 建立依赖关系
   get() {
+    //将当前Watcher对象推入Watcher栈中
     pushTarget(this)
     let value
     const vm = this.vm
