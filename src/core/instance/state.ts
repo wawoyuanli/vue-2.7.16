@@ -50,7 +50,6 @@ export function proxy(target: Object, sourceKey: string, key: string) {
 }
 //依此初始化了 props->setup->method->data->computed-<watch
 export function initState(vm: Component) {
-  debugger
   const opts = vm.$options
   if (opts.props) initProps(vm, opts.props)
 

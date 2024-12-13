@@ -138,6 +138,15 @@ export default class Watcher implements DepTarget {
    * Evaluate the getter, and re-collect dependencies.
    */
   //评估getter函数 建立依赖关系
+  /**
+   * 
+    1、将Dep类的静态属性target设置为当前watcher，并推入存储watcher的栈中
+    2、然后执行getter函数。
+      computedWatcher：执行getter函数，其实就是执行computed属性的对应的函数或者get，如果执行的函数里，有依赖到其他属性，这时就会建立其他属性和当前computedWatcher的依赖关系
+      userWatcher：执行getter方法，其实就是获取当前属性的值，并设置当前userWatcher.value
+      renderWatcher: 执行updateComponent函数，即执行render和patch，在render阶段时，如果读取到组件里的属性，依旧会触发属性的get，即同时与renderWatcher建立依赖关系
+    3、将Dep类的静态属性target设置为当前watcher，并退出存储watcher的栈
+   */
   get() {
     //将当前Watcher对象推入Watcher栈中
     pushTarget(this)
@@ -201,6 +210,11 @@ export default class Watcher implements DepTarget {
   /**
    * Subscriber interface.
    * Will be called when a dependency changes.
+   * update函数触发时机：watcher所观察的属性 触发更新
+   update函数执行流程：
+    1、如果this.lazy为true，即当前watcher属于computedWatcher，只是设置dirty属性
+    2、如果this.sync, 执行run函数
+    3、否则将当前watcher入队，后面在异步更新时，会遍历执行watcher的run方法
    */
   update() {
     /* istanbul ignore else */
@@ -216,6 +230,11 @@ export default class Watcher implements DepTarget {
   /**
    * Scheduler job interface.
    * Will be called by the scheduler.
+   * 
+  run函数触发时机是 vue执行异步更新时，会遍历触发watcher的run函数
+  run函数执行流程：
+  1、执行get函数
+  2、如果是userWatcher，要执行cb 回调函数
    */
   run() {
     if (this.active) {
@@ -285,3 +304,9 @@ export default class Watcher implements DepTarget {
     }
   }
 }
+
+// watcher.get函数作用一是获取对应属性的值，二是与观察的属性建立关系的过程
+// 不同watcher执行的get：computedWatcher执行get会执行属性所对应的函数，同时与依赖属性的dep建立关系，并返回值。userWatcher即会通过属性名，获取到组件的属性的值。renderWatcher则是执行updateComponent函数，首次执行是初始化和挂载组件，后面则是执行组件更新
+// 当属性改变时，执行的是watcher的update。除了computedWatcher外，userWatcher和renderWatcher都会进入异步刷新队列，即执行queueWatcher(this)
+// userWatcher和renderWatcher执行更新，最终会执行watcher.run函数
+// watcher.run函数主要执行 get函数 和 cb回调函数。因为renderWatcher的cb传的是空函数，所以renderWatcher的run主要还是执行get函数，即更新函数updateComponent。userWatcher则需要先执行get函数获取到新的值，并传入cb回调函数
