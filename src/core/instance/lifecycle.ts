@@ -36,7 +36,7 @@ export function setActiveInstance(vm: Component) {
 }
 
 export function initLifecycle(vm: Component) {
-  debugger
+  
   const options = vm.$options
 
   // locate first non-abstract parent
@@ -199,8 +199,12 @@ export function mountComponent(
       mark(endTag)
       measure(`vue ${name} patch`, startTag, endTag)
     }
-  } else {
+  } else { 
+  // 调用更新渲染时 先把模板转换ast，然后优化静态动态节点 然后得到真正的渲染函数，
+  // 在执行渲染函数时，获取挂载在组件实例下的状态值，触发属性定义方法里的get函数，dep.depend()
+  // 然后收集到这个更新渲染的watcher依赖，渲染函数执行完成，获取到vNode,然后执行patch进行虚拟dom的diff算法，然后渲染就完成了。
     updateComponent = () => {
+      //定义了更新渲染的函数
       vm._update(vm._render(), hydrating)
     }
   }

@@ -53,7 +53,7 @@ export function initState(vm: Component) {
   const opts = vm.$options
   if (opts.props) initProps(vm, opts.props)
 
-  // Composition API
+  // Composition API v3新增
   initSetup(vm)
 
   if (opts.methods) initMethods(vm, opts.methods)
@@ -64,7 +64,10 @@ export function initState(vm: Component) {
     const ob = observe((vm._data = {}))
     ob && ob.vmCount++
   }
-  if (opts.computed) initComputed(vm, opts.computed)
+  if (opts.computed) {
+    vm._name = ''
+    initComputed(vm, opts.computed)
+  }
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch)
   }
@@ -186,9 +189,10 @@ export function getData(data: Function, vm: Component): any {
   }
 }
 
-const computedWatcherOptions = { lazy: true }
+const computedWatcherOptions = { lazy: true,name:'initComputed' }
 
 function initComputed(vm: Component, computed: Object) {
+  debugger
   // $flow-disable-line
   const watchers = (vm._computedWatchers = Object.create(null))
   // computed properties are just getters during SSR
@@ -386,6 +390,7 @@ export function stateMixin(Vue: typeof Component) {
       return createWatcher(vm, expOrFn, cb, options)
     }
     options = options || {}
+    // watch选项 use Watcher
     options.user = true
     const watcher = new Watcher(vm, expOrFn, cb, options)
     if (options.immediate) {

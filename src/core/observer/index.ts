@@ -65,7 +65,7 @@ export class Observer {
     // this.value = value
     //初始化Observer实例
     //创建依赖管理对象 Dep
-    this.dep = mock ? mockDep : new Dep()
+    this.dep = mock ? mockDep : new Dep() //发布者
     this.vmCount = 0 //记录有多少个 vm 实例使用该对象作为根 $data
     // 在值 value 上定义 __ob__ 属性，指向当前 Observer 实例
     def(value, '__ob__', this)
@@ -217,7 +217,7 @@ export function defineReactive(
             key
           })
         } else {
-          //依赖收集
+          //依赖收集 
           dep.depend()
         }
         if (childOb) {

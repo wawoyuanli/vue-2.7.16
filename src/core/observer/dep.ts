@@ -48,7 +48,7 @@ export default class Dep {
     this.subs.push(sub)
   }
  
-  //移除
+  //移除Watcher对象
   removeSub(sub: DepTarget) {
     // #12696 deps with massive amount of subscribers are extremely slow to
     // clean up in Chromium

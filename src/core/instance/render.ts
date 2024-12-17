@@ -101,6 +101,9 @@ export function renderMixin(Vue: typeof Component) {
     return nextTick(fn, this)
   }
 
+   /**
+    * 作用：渲染vue实例成虚拟dom，返回vnode
+    */
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
     const { render, _parentVnode } = vm.$options

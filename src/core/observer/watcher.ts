@@ -32,14 +32,12 @@ export interface WatcherOptions extends DebuggerOptions {
   before?: Function
 }
 
-/**
+/** 
+ * 观察者、依赖者、订阅者
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
  * @internal
- */
-/**
- * 
  */
 /**
  * DepTarget:[addDep,update]:添加依赖和更新
@@ -72,11 +70,11 @@ export default class Watcher implements DepTarget {
   onTrigger?: ((event: DebuggerEvent) => void) | undefined
 
   constructor(
-    vm: Component | null,
-    expOrFn: string | (() => any),
-    cb: Function,
-    options?: WatcherOptions | null,
-    isRenderWatcher?: boolean
+    vm: Component | null, //Vue类/组件 实例
+    expOrFn: string | (() => any), //字符表达式或者函数
+    cb: Function, //回调函数，收到更新通知时执行
+    options?: WatcherOptions | null, //其他选项
+    isRenderWatcher?: boolean //是否为渲染watcher
   ) {
     recordEffectScope(
       this,
@@ -109,15 +107,15 @@ export default class Watcher implements DepTarget {
     this.id = ++uid // uid for batching
     this.active = true
     this.post = false
-    this.dirty = this.lazy // for lazy watchers
-    this.deps = []
-    this.newDeps = []
+    this.dirty = this.lazy // for lazy watchers 始化 dirty = lazy，主要用于计算属性
+    this.deps = [] //当前观察的dep
+    this.newDeps = [] //新收集的需要观察的dep
     this.depIds = new Set()
     this.newDepIds = new Set()
     this.expression = __DEV__ ? expOrFn.toString() : ''
     // parse expression for getter
     if (isFunction(expOrFn)) {
-      this.getter = expOrFn
+      this.getter = expOrFn //expOrFn 转成 getter 函数
     } else {
       this.getter = parsePath(expOrFn)
       if (!this.getter) {
@@ -131,6 +129,7 @@ export default class Watcher implements DepTarget {
           )
       }
     }
+    //如果不是 lazy 的 watcher 则立即执行 get 成员方法
     this.value = this.lazy ? undefined : this.get()
   }
 
@@ -148,11 +147,15 @@ export default class Watcher implements DepTarget {
     3、将Dep类的静态属性target设置为当前watcher，并退出存储watcher的栈
    */
   get() {
+    console.log(this,'watcher.get')
     //将当前Watcher对象推入Watcher栈中
     pushTarget(this)
     let value
     const vm = this.vm
     try {
+      //调用 getter 求值，触发响应式变量的 getter 收集依赖
+      //执行 updateComponent 
+      //执行 updateComponent 时，会触发 Observe 类中定义的 get(数据劫持) 方法
       value = this.getter.call(vm, vm)
     } catch (e: any) {
       if (this.user) {
@@ -164,9 +167,12 @@ export default class Watcher implements DepTarget {
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
       if (this.deep) {
+        //如果需要，则对 value 的属性递归求值和收集依赖
         traverse(value)
       }
+      //出栈，恢复 Dep.target 为之前备份的 Watcher 对象
       popTarget()
+      //新旧依赖过滤，移除不需要的依赖
       this.cleanupDeps()
     }
     return value
@@ -181,6 +187,7 @@ export default class Watcher implements DepTarget {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
+        //this.subs.push(watcher|this)
         dep.addSub(this)
       }
     }
