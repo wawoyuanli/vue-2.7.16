@@ -20,15 +20,15 @@ function Vue(options) {
 
 /* 以下方法将Vue作为入参给Vue原型对象添加全局访问的属性和方法 */
 //@ts-expect-error Vue has function type
-initMixin(Vue) //初始化Vue
+initMixin(Vue) //初始化Vue  注册Vue.prototype._init
 //@ts-expect-error Vue has function type
-stateMixin(Vue) //数据绑定，$watch观察者监听
+stateMixin(Vue) //数据绑定，$watch观察者监听   Vue.prototype.$set（$delete,$watch）
 //@ts-expect-error Vue has function type
-eventsMixin(Vue) //初始化事件绑定
+eventsMixin(Vue) //初始化事件绑定  Vue.prototype.$on($emit,$once,$off)
 //@ts-expect-error Vue has function type
-lifecycleMixin(Vue)  //初始化vue更新，销毁等生命周期
+lifecycleMixin(Vue)  //初始化vue更新，销毁等生命周期  Vue.prototype._update 
 //@ts-expect-error Vue has function type
-renderMixin(Vue) //初始化render函数
+renderMixin(Vue) //初始化render函数 Vue.prototype._render Vue.prototype.$nextTick
 
 export default Vue as unknown as GlobalAPI
 

@@ -131,7 +131,7 @@ function initProps(vm: Component, propsOptions: Object) {
 
 //【初始化组件data  ***重要***】
 function initData(vm: Component) {
-  let data: any = vm.$options.data
+  let data: any = vm.$options.data //用户编写的data
   //如果 data 是一个函数，则通过 getData 函数获取其返回值，否则直接使用 data 或者默认为空对象 {}
   data = vm._data = isFunction(data) ? getData(data, vm) : data || {}
   //如果data不是一个纯对象，则给出警告（开发环境下）
@@ -178,8 +178,9 @@ function initData(vm: Component) {
 
 export function getData(data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
-  pushTarget()
-  try {
+  pushTarget() //Dep.target == undefined
+  try { 
+    //为data函数绑定的上下文
     return data.call(vm, vm)
   } catch (e: any) {
     handleError(e, vm, `data()`)
@@ -192,7 +193,7 @@ export function getData(data: Function, vm: Component): any {
 const computedWatcherOptions = { lazy: true,name:'initComputed' }
 
 function initComputed(vm: Component, computed: Object) {
-  debugger
+  console.log('---initComputed---')
   // $flow-disable-line
   const watchers = (vm._computedWatchers = Object.create(null))
   // computed properties are just getters during SSR
@@ -204,7 +205,7 @@ function initComputed(vm: Component, computed: Object) {
     if (__DEV__ && getter == null) {
       warn(`Getter is missing for computed property "${key}".`, vm)
     }
-
+    //为computed中的每一个key创建一个watcher
     if (!isSSR) {
       // create internal watcher for the computed property.
       watchers[key] = new Watcher(
@@ -219,6 +220,7 @@ function initComputed(vm: Component, computed: Object) {
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
     if (!(key in vm)) {
+      //会将key对应的watcher缓存在vm的_computedWatchers中
       defineComputed(vm, key, userDef)
     } else if (__DEV__) {
       if (key in vm.$data) {
@@ -298,6 +300,7 @@ function initMethods(vm: Component, methods: Object) {
   const props = vm.$options.props
   for (const key in methods) {
     if (__DEV__) {
+      //意味着methods中的项必须是函数
       if (typeof methods[key] !== 'function') {
         warn(
           `Method "${key}" has type "${typeof methods[
@@ -307,9 +310,12 @@ function initMethods(vm: Component, methods: Object) {
           vm
         )
       }
+      //方法名不能是props中的属性名，由此看来，props的优先级比methods高
       if (props && hasOwn(props, key)) {
         warn(`Method "${key}" has already been defined as a prop.`, vm)
       }
+      //如果key是vm的属性，同时首字符是'$'或'_'，则报错
+      //isReserved：判断key的首字符是否是'$'或'_' 
       if (key in vm && isReserved(key)) {
         warn(
           `Method "${key}" conflicts with an existing Vue instance method. ` +
@@ -317,13 +323,16 @@ function initMethods(vm: Component, methods: Object) {
         )
       }
     }
+    //此处为methods中的函数绑定上下文，这也是methods中的函数能通过this访问vue实例的原因
     vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm)
   }
 }
 
 function initWatch(vm: Component, watch: Object) {
+  console.log('---initWatch---')
   for (const key in watch) {
     const handler = watch[key]
+    //意味着一个key可以对应多个处理函数
     if (isArray(handler)) {
       for (let i = 0; i < handler.length; i++) {
         createWatcher(vm, key, handler[i])

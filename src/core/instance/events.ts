@@ -11,8 +11,10 @@ import { updateListeners } from '../vdom/helpers/index'
 
 export function initEvents(vm: Component) {
   vm._events = Object.create(null)
+  //vue实例中是否包含钩子事件，比如created，beforeMount等等
   vm._hasHookEvent = false
   // init parent attached events
+  //只有非根组件中才会有_parentListeners属性
   const listeners = vm.$options._parentListeners
   if (listeners) {
     updateComponentListeners(vm, listeners)

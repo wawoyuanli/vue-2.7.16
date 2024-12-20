@@ -1,3 +1,4 @@
+/* 最开始的入口文件 */
 import Vue from './runtime-with-compiler'
 import * as vca from 'v3'
 import { extend } from 'shared/util'

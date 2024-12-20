@@ -37,10 +37,12 @@ extend(Vue.options.components, platformComponents)
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
+// 在vue上首次挂载$mount
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  console.log('$mount--3---最开始全局注册的地方')
   el = el && inBrowser ? query(el) : undefined
   return mountComponent(this, el, hydrating)
 }

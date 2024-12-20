@@ -36,10 +36,11 @@ export function setActiveInstance(vm: Component) {
 }
 
 export function initLifecycle(vm: Component) {
-  
+  //将实例属性保存在本地，因为复杂数据保存在堆中，每次访问vm的实例属性，都会执行堆查找操作，通常多于两次访问一个变量时，将会保存在本地（即：用空间换时间的思想）
   const options = vm.$options
 
   // locate first non-abstract parent
+  //定位第一个非抽象父元素
   let parent = options.parent
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
@@ -51,12 +52,12 @@ export function initLifecycle(vm: Component) {
   vm.$parent = parent
   vm.$root = parent ? parent.$root : vm
 
-  vm.$children = []
-  vm.$refs = {}
+  vm.$children = [] //先父组件，后子组件
+  vm.$refs = {} //ref组合是一个对象
   /* Object.create(null) 没有任何属性的空对象*/
   vm._provided = parent ? parent._provided : Object.create(null)
-  vm._watcher = null
-  vm._inactive = null
+  vm._watcher = null //_watcher中保存的是render watcher(渲染Watcher)
+  vm._inactive = null //内置组件keep-alive的实例是否处于唤醒状态
   vm._directInactive = false
   vm._isMounted = false
   vm._isDestroyed = false
@@ -72,11 +73,14 @@ export function lifecycleMixin(Vue: typeof Component) {
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
+    //是否初次渲染
     if (!prevVnode) {
       // initial render
+      //初始化渲染
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
+      //更新渲染 新旧节点比对
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
     restoreActiveInstance()
@@ -153,8 +157,9 @@ export function mountComponent(
   el: Element | null | undefined,
   hydrating?: boolean
 ): Component {
-  vm.$el = el
-  if (!vm.$options.render) {
+  vm.$el = el //$el赋值，用户最早在beforeMount钩子可以访问
+  if (!vm.$options.render) { //当用户编写的代码中，既没有render函数，也没有template模板，也没有正确的el,
+    //在$mount拓展阶段就不会生成render，Vue就会提供一个默认的空节点渲染函数，挂载后就什么都不显示
     // @ts-expect-error invalid type
     vm.$options.render = createEmptyVNode
     if (__DEV__) {
@@ -178,7 +183,7 @@ export function mountComponent(
       }
     }
   }
-  callHook(vm, 'beforeMount')
+  callHook(vm, 'beforeMount') //执行用户编写在beforeMount中的代码
 
   let updateComponent
   /* istanbul ignore if */
@@ -203,9 +208,10 @@ export function mountComponent(
   // 调用更新渲染时 先把模板转换ast，然后优化静态动态节点 然后得到真正的渲染函数，
   // 在执行渲染函数时，获取挂载在组件实例下的状态值，触发属性定义方法里的get函数，dep.depend()
   // 然后收集到这个更新渲染的watcher依赖，渲染函数执行完成，获取到vNode,然后执行patch进行虚拟dom的diff算法，然后渲染就完成了。
-    updateComponent = () => {
+    updateComponent = () => { 
       //定义了更新渲染的函数
-      vm._update(vm._render(), hydrating)
+      //vm._render()：获取组件对应的vnode（虚拟DOM）
+      vm._update(vm._render(), hydrating) //很重要！！！
     }
   }
 
@@ -225,6 +231,8 @@ export function mountComponent(
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
+  // 创建一个render watcher，一个vue组件只有一个
+  //创建watcher时，会调用传入的updateComponent,
   new Watcher(
     vm,
     updateComponent,
@@ -406,6 +414,7 @@ export function callHook(
   setContext = true
 ) {
   // #7573 disable dep collection when invoking lifecycle hooks
+  //pushTarget的参数为undefined，导致Dep.target为undefined，依赖收集失败
   pushTarget()
   const prevInst = currentInstance
   const prevScope = getCurrentScope()

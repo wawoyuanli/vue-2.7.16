@@ -3,6 +3,7 @@ import { defineReactive, toggleObserving } from '../observer/index'
 import type { Component } from 'types/component'
 import { resolveProvided } from 'v3/apiInject'
 
+//为什么provide初始化滞后与inject
 export function initProvide(vm: Component) {
   const provideOption = vm.$options.provide
   if (provideOption) {
@@ -28,8 +29,10 @@ export function initProvide(vm: Component) {
 }
 
 export function initInjections(vm: Component) {
+  //解析用户编写的inject
   const result = resolveInject(vm.$options.inject, vm)
   if (result) {
+    //如果result[key]是对象或数组，则不会递归地进行observe
     toggleObserving(false)
     Object.keys(result).forEach(key => {
       /* istanbul ignore else */

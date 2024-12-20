@@ -41,6 +41,7 @@ export function initRender(vm: Component) {
   // normalization is always applied for the public version, used in
   // user-written render functions.
   // @ts-expect-error
+  // 用户编写的渲染函数，渲染函数返回vnode，即虚拟dom
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
   // $attrs & $listeners are exposed for easier HOC creation.
@@ -48,16 +49,10 @@ export function initRender(vm: Component) {
   const parentData = parentVnode && parentVnode.data
 
   /* istanbul ignore else */
+  //这两个属性会透传到子组件，即在自定义组件中可以访问这两个属性
   if (__DEV__) {
-    defineReactive(
-      vm,
-      '$attrs',
-      (parentData && parentData.attrs) || emptyObject,
-      () => {
-        !isUpdatingChildComponent && warn(`$attrs is readonly.`, vm)
-      },
-      true
-    )
+    defineReactive(vm,'$attrs',(parentData && parentData.attrs) || emptyObject,() => {
+        !isUpdatingChildComponent && warn(`$attrs is readonly.`, vm)},true)
     defineReactive(
       vm,
       '$listeners',

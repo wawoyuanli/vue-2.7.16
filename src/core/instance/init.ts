@@ -63,14 +63,15 @@ export function initMixin(Vue: typeof Component) {
     }
     // expose real self
     vm._self = vm
-    initLifecycle(vm)
-    initEvents(vm)
-    initRender(vm)
-    callHook(vm, 'beforeCreate', undefined, false /* setContext */)
-    initInjections(vm) // resolve injections before data/props
-    initState(vm)
-    initProvide(vm) // resolve provide after data/props
-    callHook(vm, 'created')
+    initLifecycle(vm) //初始化实例中与生命周期相关的属性
+    initEvents(vm) //处理父组件传递的事件和回调
+    initRender(vm) //初始化与渲染相关的实例属性
+    //调用beforeCreate钩子，即执行beforeCreate中的代码（用户编写）
+    callHook(vm, 'beforeCreate', undefined, false /* setContext */) 
+    initInjections(vm) // 获取注入数据 resolve injections before data/props
+    initState(vm) //初始化props、methods、data、computed、watch
+    initProvide(vm) // 提供数据注入 resolve provide after data/props
+    callHook(vm, 'created')//执行钩子created中的代码（用户编写）
 
     /* istanbul ignore if */
     if (__DEV__ && config.performance && mark) {
@@ -78,8 +79,10 @@ export function initMixin(Vue: typeof Component) {
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
-
+    //DOM容器（通常是指定id的div）
     if (vm.$options.el) {
+      console.log('$mount--1--最开始调用的地方')
+      //将虚拟DOM转换成真实DOM，然后插入到DOM容器内
       vm.$mount(vm.$options.el)
     }
   }

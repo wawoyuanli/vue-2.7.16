@@ -86,6 +86,7 @@ export default class Watcher implements DepTarget {
         ? vm._scope
         : undefined
     )
+    /* 触发组件渲染 */
     if ((this.vm = vm) && isRenderWatcher) {
       vm._watcher = this
     }
@@ -93,9 +94,9 @@ export default class Watcher implements DepTarget {
     if (options) {
       this.deep = !!options.deep
       this.user = !!options.user
-      this.lazy = !!options.lazy
-      this.sync = !!options.sync
-      this.before = options.before
+      this.lazy = !!options.lazy //用于computed watcher，值为true时，不会执行run方法
+      this.sync = !!options.sync //用于watch watcher，值为true时，同步执行run方法，执行更新。
+      this.before = options.before //用于触发beforeUpdate钩子
       if (__DEV__) {
         this.onTrack = options.onTrack
         this.onTrigger = options.onTrigger
@@ -111,7 +112,7 @@ export default class Watcher implements DepTarget {
     this.deps = [] //当前观察的dep
     this.newDeps = [] //新收集的需要观察的dep
     this.depIds = new Set()
-    this.newDepIds = new Set()
+    this.newDepIds = new Set() //防止重复收集依赖
     this.expression = __DEV__ ? expOrFn.toString() : ''
     // parse expression for getter
     if (isFunction(expOrFn)) {
@@ -147,7 +148,6 @@ export default class Watcher implements DepTarget {
     3、将Dep类的静态属性target设置为当前watcher，并退出存储watcher的栈
    */
   get() {
-    console.log(this,'watcher.get')
     //将当前Watcher对象推入Watcher栈中
     pushTarget(this)
     let value
@@ -156,6 +156,7 @@ export default class Watcher implements DepTarget {
       //调用 getter 求值，触发响应式变量的 getter 收集依赖
       //执行 updateComponent 
       //执行 updateComponent 时，会触发 Observe 类中定义的 get(数据劫持) 方法
+      //建立watcher实例与dep实例的关联，对于三种watcher都适用
       value = this.getter.call(vm, vm)
     } catch (e: any) {
       if (this.user) {
@@ -166,6 +167,7 @@ export default class Watcher implements DepTarget {
     } finally {
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
+      //仅对watch watcher实例适用
       if (this.deep) {
         //如果需要，则对 value 的属性递归求值和收集依赖
         traverse(value)
@@ -173,6 +175,8 @@ export default class Watcher implements DepTarget {
       //出栈，恢复 Dep.target 为之前备份的 Watcher 对象
       popTarget()
       //新旧依赖过滤，移除不需要的依赖
+      //执行到此时，表明当前watcher的依赖收集完毕，需要将newDepIds和newDeps的值分别赋给depIds和deps，
+      // 并且将newDepIds和newDeps的值清空，等待下一次页面更新时，重新收集依赖；
       this.cleanupDeps()
     }
     return value

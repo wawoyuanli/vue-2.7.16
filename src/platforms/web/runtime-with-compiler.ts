@@ -18,17 +18,19 @@ const idToTemplate = cached(id => {
   return el && el.innerHTML
 })
 
-//重写$mount方法
+//重写$mount方法（在此拓展$mount方法）
+//当用户代码中同时包含render，template，el时，它们的优先级依次为：render、template、el
 const mount = Vue.prototype.$mount
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
-  
+  console.log('$mount--2--拓展的地方')
   el = el && query(el)
 
   /* istanbul ignore if */
   //将vue绑定到body或者html元素上的错误提示 
+  //挂载容器el不能是body或documentElement
   if (el === document.body || el === document.documentElement) {
     __DEV__ &&
       warn(
@@ -47,6 +49,7 @@ Vue.prototype.$mount = function (
     if (template) {
       if (typeof template === 'string') {
         if (template.charAt(0) === '#') {
+          //通过id获取template
           template = idToTemplate(template)
           /* istanbul ignore if */
           if (__DEV__ && !template) {
@@ -74,7 +77,7 @@ Vue.prototype.$mount = function (
       if (__DEV__ && config.performance && mark) {
         mark('compile')
       }
-
+     //将template转换成render
       const { render, staticRenderFns } = compileToFunctions(
         template,
         {
@@ -97,6 +100,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
+  //执行最初定义的$mount
   return mount.call(this, el, hydrating)
 }
 
