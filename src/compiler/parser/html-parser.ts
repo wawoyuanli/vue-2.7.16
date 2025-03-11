@@ -75,6 +75,7 @@ export function parseHTML(html, options: HTMLParserOptions) {
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no
   let index = 0
   let last, lastTag
+  //开启一个 while 循环，循环结束的条件是 html 为空，即 html 被 parse 完毕
   while (html) {
     last = html
     // Make sure we're not in a plaintext content element like script/style

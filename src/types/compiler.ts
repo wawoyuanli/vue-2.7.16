@@ -101,7 +101,7 @@ export type ASTDirective = {
 }
 
 export type ASTNode = ASTElement | ASTText | ASTExpression
-
+//解析template，生成ast
 export type ASTElement = {
   type: 1
   tag: string

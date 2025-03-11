@@ -11,7 +11,6 @@ initGlobalAPI(Vue)
 Object.defineProperty(Vue.prototype, '$isServer', {
   get: isServerRendering
 })
-
 Object.defineProperty(Vue.prototype, '$ssrContext', {
   get() {
     /* istanbul ignore next */
@@ -25,5 +24,4 @@ Object.defineProperty(Vue, 'FunctionalRenderContext', {
 })
 
 Vue.version = version
-
 export default Vue

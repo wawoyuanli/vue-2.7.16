@@ -34,6 +34,7 @@ extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
+//全局注册patch
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
@@ -42,7 +43,7 @@ Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
-  console.log('$mount--3---最开始全局注册的地方')
+  console.log('$mount--1---最开始全局注册的地方')
   el = el && inBrowser ? query(el) : undefined
   return mountComponent(this, el, hydrating)
 }

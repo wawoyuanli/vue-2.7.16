@@ -153,6 +153,7 @@ export function observe(
     !isRef(value) && //值不能是 ref 对象
     !(value instanceof VNode) //值不能是 Vue 虚拟节点
   ) {
+    
     //创建一个新的Observer实例来观察该值
     return new Observer(value, shallow, ssrMockReactivity)
   }
@@ -172,6 +173,9 @@ export function observe(
  * @param mock 可选，是否模拟对象
  * @param observeEvenIfShallow 默认为 false，即使是浅层观察也进行观察
  * @returns 
+ * Vue2在初始化Observer时，会递归遍历对象的属性，并调用Object.defineProperty来定义getter和setter。
+ * 在这个过程中，只是定义了这些访问器属性，而并没有主动去读取属性的值，因此不会触发getter。
+ * 只有当属性被访问时（例如在渲染过程中），才会触发getter，从而进行依赖收集。
  */
 export function defineReactive(
   obj: object,

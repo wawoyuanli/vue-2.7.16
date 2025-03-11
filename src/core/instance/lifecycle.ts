@@ -151,7 +151,7 @@ export function lifecycleMixin(Vue: typeof Component) {
     }
   }
 }
-
+//3调用执行的地方
 export function mountComponent(
   vm: Component,
   el: Element | null | undefined,
@@ -211,10 +211,10 @@ export function mountComponent(
     updateComponent = () => { 
       //定义了更新渲染的函数
       //vm._render()：获取组件对应的vnode（虚拟DOM）
-      vm._update(vm._render(), hydrating) //很重要！！！
+      // let vnode = vm._render() //渲染时对数据进行读取操作，触发依赖收集
+      vm._update(vm._render() , hydrating) //很重要！！！
     }
   }
-
   const watcherOptions: WatcherOptions = {
     before() {
       if (vm._isMounted && !vm._isDestroyed) {
@@ -241,7 +241,6 @@ export function mountComponent(
     true /* isRenderWatcher */
   )
   hydrating = false
-
   // flush buffer for flush: "pre" watchers queued in setup()
   const preWatchers = vm._preWatchers
   if (preWatchers) {

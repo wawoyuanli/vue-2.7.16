@@ -63,6 +63,7 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
   return map
 }
 
+/* 实现patch的地方 */
 export function createPatchFunction(backend) {
   let i, j
   const cbs: any = {}
@@ -117,7 +118,7 @@ export function createPatchFunction(backend) {
   }
 
   let creatingElmInVPre = 0
-
+  //获取虚拟节点中的节点以及值依次插入DOM
   function createElm(
     vnode,
     insertedVnodeQueue,
@@ -142,8 +143,10 @@ export function createPatchFunction(backend) {
     }
 
     const data = vnode.data
+    //获取子节点信息 【重要】
     const children = vnode.children
     const tag = vnode.tag
+    //取节点
     if (isDef(tag)) {
       if (__DEV__) {
         if (data && data.pre) {
@@ -165,7 +168,6 @@ export function createPatchFunction(backend) {
         ? nodeOps.createElementNS(vnode.ns, tag)
         : nodeOps.createElement(tag, vnode)
       setScope(vnode)
-
       createChildren(vnode, children, insertedVnodeQueue)
       if (isDef(data)) {
         invokeCreateHooks(vnode, insertedVnodeQueue)
@@ -179,6 +181,7 @@ export function createPatchFunction(backend) {
       vnode.elm = nodeOps.createComment(vnode.text)
       insert(parentElm, vnode.elm, refElm)
     } else {
+      //取值
       vnode.elm = nodeOps.createTextNode(vnode.text)
       insert(parentElm, vnode.elm, refElm)
     }
@@ -249,6 +252,7 @@ export function createPatchFunction(backend) {
     insert(parentElm, vnode.elm, refElm)
   }
 
+  //【重要】将子节点依次插入跟节点中
   function insert(parent, elm, ref) {
     if (isDef(parent)) {
       if (isDef(ref)) {
@@ -409,7 +413,7 @@ export function createPatchFunction(backend) {
       removeNode(vnode.elm)
     }
   }
-
+  /* 初次渲染不调用，更新时数据或者节点有变动才调用 diff过程*/
   function updateChildren(
     parentElm,
     oldCh,
@@ -435,7 +439,7 @@ export function createPatchFunction(backend) {
     if (__DEV__) {
       checkDuplicateKeys(newCh)
     }
-
+ //diff过程
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
       if (isUndef(oldStartVnode)) {
         oldStartVnode = oldCh[++oldStartIdx] // Vnode has been moved left
@@ -580,7 +584,7 @@ export function createPatchFunction(backend) {
       if (isDef(c) && sameVnode(node, c)) return i
     }
   }
-
+//patch vnode
   function patchVnode(
     oldVnode,
     vnode,

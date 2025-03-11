@@ -43,6 +43,7 @@ export function createElement(
   return _createElement(context, tag, data, children, normalizationType)
 }
 
+/* 此处生成虚拟节点 */
 export function _createElement(
   context: Component,
   tag?: string | Component | Function | Object,

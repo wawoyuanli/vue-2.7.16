@@ -75,7 +75,6 @@ export function genElement(el: ASTElement, state: CodegenState): string {
   if (el.parent) {
     el.pre = el.pre || el.parent.pre
   }
-
   if (el.staticRoot && !el.staticProcessed) {
     return genStatic(el, state)
   } else if (el.once && !el.onceProcessed) {
@@ -274,6 +273,7 @@ export function genFor(
   )
 }
 
+//【重要】
 export function genData(el: ASTElement, state: CodegenState): string {
   let data = '{'
 

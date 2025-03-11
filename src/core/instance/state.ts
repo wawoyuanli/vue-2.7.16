@@ -388,7 +388,6 @@ export function stateMixin(Vue: typeof Component) {
 
   Vue.prototype.$set = set
   Vue.prototype.$delete = del
-
   Vue.prototype.$watch = function (
     expOrFn: string | (() => any),
     cb: any,

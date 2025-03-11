@@ -149,6 +149,7 @@ export default class Watcher implements DepTarget {
    */
   get() {
     //将当前Watcher对象推入Watcher栈中
+    //将自身实例赋值到 Dep.target 这个静态属性上（保证全局都能拿到这个 watcher 实例）【重要】
     pushTarget(this)
     let value
     const vm = this.vm
@@ -157,7 +158,8 @@ export default class Watcher implements DepTarget {
       //执行 updateComponent 
       //执行 updateComponent 时，会触发 Observe 类中定义的 get(数据劫持) 方法
       //建立watcher实例与dep实例的关联，对于三种watcher都适用
-      value = this.getter.call(vm, vm)
+      value = this.getter.call(vm, vm) //对响应式数据进行读取操作【重点】 //渲染时对数据进行读取操作，触发依赖收集
+      console.log(value)
     } catch (e: any) {
       if (this.user) {
         handleError(e, vm, `getter for watcher "${this.expression}"`)
@@ -222,9 +224,9 @@ export default class Watcher implements DepTarget {
    * Subscriber interface.
    * Will be called when a dependency changes.
    * update函数触发时机：watcher所观察的属性 触发更新
-   update函数执行流程：
+    update函数执行流程：
     1、如果this.lazy为true，即当前watcher属于computedWatcher，只是设置dirty属性
-    2、如果this.sync, 执行run函数
+    2、如果this.sync同步, 执行run函数
     3、否则将当前watcher入队，后面在异步更新时，会遍历执行watcher的run方法
    */
   update() {

@@ -1,4 +1,5 @@
 import { cached } from 'shared/util'
+/* 解析{{}} */
 import { parseFilters } from './filter-parser'
 
 const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g

@@ -52,13 +52,12 @@ export function createCompileToFunctionFn(compile: Function): Function {
     const key = options.delimiters
       ? String(options.delimiters) + template
       : template
-    if (cache[key]) {
+    if (cache[key]) { //缓存字符串模板的编译结果，防止重复编译，提升性能
       return cache[key]
     }
 
     // compile
-    const compiled = compile(template, options)
-
+    const compiled = compile(template, options) //errors 和 tips
     // check compilation errors/tips
     if (__DEV__) {
       if (compiled.errors && compiled.errors.length) {
@@ -91,6 +90,7 @@ export function createCompileToFunctionFn(compile: Function): Function {
     // turn code into functions
     const res: any = {}
     const fnGenErrors: any[] = []
+    //render函数来源
     res.render = createFunction(compiled.render, fnGenErrors)
     res.staticRenderFns = compiled.staticRenderFns.map(code => {
       return createFunction(code, fnGenErrors)
@@ -113,7 +113,7 @@ export function createCompileToFunctionFn(compile: Function): Function {
         )
       }
     }
-
+   //缓存字符串模板的编译结果，防止重复编译，提升性能
     return (cache[key] = res)
   }
 }

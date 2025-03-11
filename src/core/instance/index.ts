@@ -17,7 +17,7 @@ function Vue(options) {
   this._init(options)
 }
 
-
+/* Vue初始化前做的事情 【重要】*/
 /* 以下方法将Vue作为入参给Vue原型对象添加全局访问的属性和方法 */
 //@ts-expect-error Vue has function type
 initMixin(Vue) //初始化Vue  注册Vue.prototype._init

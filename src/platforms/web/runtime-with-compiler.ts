@@ -18,7 +18,7 @@ const idToTemplate = cached(id => {
   return el && el.innerHTML
 })
 
-//重写$mount方法（在此拓展$mount方法）
+//2重写$mount方法（在此拓展$mount方法）
 //当用户代码中同时包含render，template，el时，它们的优先级依次为：render、template、el
 const mount = Vue.prototype.$mount
 Vue.prototype.$mount = function (
@@ -77,7 +77,7 @@ Vue.prototype.$mount = function (
       if (__DEV__ && config.performance && mark) {
         mark('compile')
       }
-     //将template转换成render
+     //将template字符串转换成render函数
       const { render, staticRenderFns } = compileToFunctions(
         template,
         {
@@ -89,7 +89,7 @@ Vue.prototype.$mount = function (
         },
         this
       )
-      //获得模版字符串后，转换为render函数
+      //获得模版字符串后，转换为render函数 【重要】
       options.render = render
       options.staticRenderFns = staticRenderFns
 
@@ -100,7 +100,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
-  //执行最初定义的$mount
+  //执行最初定义的$mount mountComponent
   return mount.call(this, el, hydrating)
 }
 

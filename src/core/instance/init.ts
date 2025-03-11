@@ -14,6 +14,7 @@ import { EffectScope } from 'v3/reactivity/effectScope'
 let uid = 0
 
 export function initMixin(Vue: typeof Component) {
+  /* new Vue()过程 */
   Vue.prototype._init = function (options?: Record<string, any>) {
     const vm: Component = this
     // a uid
@@ -80,10 +81,11 @@ export function initMixin(Vue: typeof Component) {
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
     //DOM容器（通常是指定id的div）
+    //挂载
     if (vm.$options.el) {
       console.log('$mount--1--最开始调用的地方')
       //将虚拟DOM转换成真实DOM，然后插入到DOM容器内
-      vm.$mount(vm.$options.el)
+      vm.$mount(vm.$options.el) 
     }
   }
 }

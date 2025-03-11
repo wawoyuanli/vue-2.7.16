@@ -85,7 +85,6 @@ export function createASTElement(
  */
 export function parse(template: string, options: CompilerOptions): ASTElement {
   warn = options.warn || baseWarn
-
   platformIsPreTag = options.isPreTag || no
   platformMustUseProp = options.mustUseProp || no
   platformGetTagNamespace = options.getTagNamespace || no
@@ -212,13 +211,14 @@ export function parse(template: string, options: CompilerOptions): ASTElement {
     }
   }
 
+  /* 解析HTML */
   parseHTML(template, {
     warn,
     expectHTML: options.expectHTML,
     isUnaryTag: options.isUnaryTag,
     canBeLeftOpenTag: options.canBeLeftOpenTag,
-    shouldDecodeNewlines: options.shouldDecodeNewlines,
-    shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
+    shouldDecodeNewlines: options.shouldDecodeNewlines, //属性值中的换行符或制表符做兼容处理
+    shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref, //对a标签的 href 属性值中的换行符或制表符做兼容处理
     shouldKeepComment: options.comments,
     outputSourceRange: options.outputSourceRange,
     start(tag, attrs, unary, start, end) {
@@ -398,6 +398,7 @@ export function parse(template: string, options: CompilerOptions): ASTElement {
             child.end = end
           }
           children.push(child)
+          
         }
       }
     },
